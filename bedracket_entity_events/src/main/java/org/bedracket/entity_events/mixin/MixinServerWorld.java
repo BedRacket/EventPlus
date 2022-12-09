@@ -6,11 +6,13 @@ import net.minecraft.server.world.ServerWorld;
 import org.bedracket.entity_events.event.EntityJoinWorldEvent;
 import org.bedracket.entity_events.event.item.ItemSpawnEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@EventInfo(events = "EntityJoinWorldEvent, ItemSpawnEvent")
 @Mixin(ServerWorld.class)
 public abstract class MixinServerWorld {
 

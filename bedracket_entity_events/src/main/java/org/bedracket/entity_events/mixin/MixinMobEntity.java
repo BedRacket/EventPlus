@@ -6,6 +6,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.World;
 import org.bedracket.entity_events.event.living.MobInitGoalEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@EventInfo(events = "MobInitGoalEvent")
 @Mixin(MobEntity.class)
 public abstract class MixinMobEntity {
 

@@ -7,12 +7,14 @@ import net.minecraft.util.math.BlockPos;
 import org.bedracket.entity_events.event.player.PlayerLevelUpEvent;
 import org.bedracket.entity_events.event.player.PlayerSleepEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@EventInfo(events = "PlayerSleepEvent, PlayerLevelUpEvent")
 @Mixin(PlayerEntity.class)
 public abstract class MixinPlayerEntity {
 

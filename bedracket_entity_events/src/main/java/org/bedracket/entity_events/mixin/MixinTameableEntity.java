@@ -4,11 +4,13 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.bedracket.entity_events.event.player.EntityTamedEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@EventInfo(events = "EntityTamedEvent")
 @Mixin(TameableEntity.class)
 public abstract class MixinTameableEntity {
 

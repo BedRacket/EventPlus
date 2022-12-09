@@ -9,11 +9,13 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.World;
 import org.bedracket.entity_events.event.player.RightClickBlockEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@EventInfo(events = "RightClickBlockEvent")
 @Mixin(ServerPlayerInteractionManager.class)
 public abstract class MixinServerPlayerInteractionManager {
 
