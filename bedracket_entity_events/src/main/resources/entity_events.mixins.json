@@ -4,13 +4,16 @@
   "package": "org.bedracket.entity_events.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "MixinArmorStandEntity",
+    "MixinEntity",
     "MixinItemEntity",
+    "MixinLivingEntity",
     "MixinMobEntity",
     "MixinPlayerEntity",
+    "MixinServerEntityHandler",
     "MixinServerPlayerInteractionManager",
     "MixinServerWorld",
-    "MixinTameableEntity",
-    "MixinServerEntityHandler"
+    "MixinTameableEntity"
   ],
   "injectors": {
     "defaultRequire": 1
