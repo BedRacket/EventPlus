@@ -1,0 +1,15 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "eventplus"
+
+include("bedracket_eventbus")
+include("bedracket_entity_events")
+include("bedracket_registry_events")

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "event_plus",
+  "provides": [
+    "fabric"
+  ],
+  "name": "Event Plus API",
+  "version": "${version}",
+  "environment": "*",
+  "license": "Apache-2.0",
+  "icon": "assets/eventplus/icon.png",
+  "authors": [
+    "BedRacketMC"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "java": ">=17",
+    "minecraft": ">=1.19.3- <1.19.4-"
+  },
+  "description": "Core Event API module providing key hooks and intercompatibility features."
+}

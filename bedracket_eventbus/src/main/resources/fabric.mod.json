@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "eventbus",
+  "version": "${version}",
+
+  "name": "Event Bus Mod",
+  "description": "This is an event bus,every event should be call from it!",
+  "authors": [
+    "BedRacket Dev"
+  ],
+
+  "license": "GPLv2.0",
+  "icon": "assets/eventbus/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.bedracket.eventbus.EventBusMod"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.14.11",
+    "fabric-api": "*",
+    "minecraft": "~1.19.3",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

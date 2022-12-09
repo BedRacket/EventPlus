@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.bedracket.entity_events.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "MixinItemEntity",
+    "MixinMobEntity",
+    "MixinPlayerEntity",
+    "MixinServerPlayerInteractionManager",
+    "MixinServerWorld",
+    "MixinTameableEntity",
+    "MixinServerEntityHandler"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

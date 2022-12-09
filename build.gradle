@@ -1,0 +1,126 @@
+plugins {
+    id 'fabric-loom' version '1.0-SNAPSHOT'
+    id 'maven-publish'
+    id 'java'
+}
+
+allprojects {
+
+    apply plugin: "fabric-loom"
+    apply plugin: "maven-publish"
+
+    version = project.mod_version
+    group = project.maven_group
+
+    repositories {
+
+    }
+
+    sourceSets {
+        testmod {
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    }
+
+
+    processResources {
+        inputs.property "version", project.version
+        filteringCharset "UTF-8"
+
+        filesMatching("fabric.mod.json") {
+            expand "version": project.version
+        }
+    }
+
+    def targetJavaVersion = 17
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = "UTF-8"
+        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+            it.options.release = targetJavaVersion
+        }
+    }
+
+    java {
+        def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+        if (JavaVersion.current() < javaVersion) {
+            toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+        }
+        archivesBaseName = project.archives_base_name
+        withSourcesJar()
+    }
+    jar {from("LICENSE")}
+}
+
+def moduleDependencies(Project project, List<String> depNames) {
+    def deps = depNames.iterator().collect { project.dependencies.project(path: ":$it", configuration: "namedElements") }
+
+    depNames.iterator().forEachRemaining {
+        Project dependProject = findProject(":$it")
+        project.loom {
+            interfaceInjection {
+                interfaceInjectionSourceSets.add(dependProject.sourceSets.main)
+            }
+        }
+    }
+    project.dependencies {
+        deps.each {
+            api(include(it))
+        }
+    }
+}
+
+
+def getSubprojectVersion(project) {
+    // Get the version from the gradle.properties file
+    def version = project.properties["${project.name}-version"]
+
+    if (!version) {
+        throw new NullPointerException("Could not find version for " + project.name)
+    }
+
+    return version
+}
+
+dependencies {
+    afterEvaluate {
+        // fat jar depends on and includes all modules
+        for (Project module : subprojects) {
+            api(include(module))
+        }
+    }
+}
+
+sourceSets {
+    allModules {
+        for (Project p : subprojects) {
+            def main = p.sourceSets.main
+            compileClasspath += main.compileClasspath + main.output
+            runtimeClasspath += main.runtimeClasspath + main.output
+        }
+    }
+}
+
+loom {
+    runs {
+        // make default run configs run all modules
+        client {
+            client()
+            name "Minecraft Client"
+            source sourceSets.allModules
+        }
+        server {
+            server()
+            name "Minecraft Server"
+            source sourceSets.allModules
+        }
+    }
+}

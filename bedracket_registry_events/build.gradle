@@ -1,0 +1,10 @@
+archivesBaseName = "bedracket_registry_events"
+version = getSubprojectVersion(project)
+
+moduleDependencies(project, [
+        "bedracket_eventbus"
+])
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.WARN
+}
