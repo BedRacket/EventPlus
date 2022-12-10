@@ -4,5 +4,13 @@
   "version": "${version}",
   "icon": "assets/entity_events/icon.png",
   "name": "BedRacket Entity Events",
-  "description": "There are entity events!"
+  "description": "There are entity events!",
+  "depends": {
+    "eventbus": "*"
+  },
+  "contact": {
+    "homepage": "https://github.com/BedRacket/EventPlus",
+    "issues": "https://github.com/BedRacket/EventPlus/issues",
+    "sources": "https://github.com/BedRacket/EventPlus"
+  }
 }
