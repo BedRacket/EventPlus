@@ -5,8 +5,6 @@
 
 package net.minecraftforge.common.capabilities;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
  * Internally the handlers are baked into arrays for fast iteration.
  * The ResourceLocations will be used for the NBT Key when serializing.
  */
-@ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public final class CapabilityDispatcher implements INBTSerializable<NbtCompound>, ICapabilityProvider {
     private ICapabilityProvider[] caps;

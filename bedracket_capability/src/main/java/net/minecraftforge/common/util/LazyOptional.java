@@ -10,8 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import net.minecraft.util.annotation.MethodsReturnNonnullByDefault;
 import net.minecraftforge.common.capabilities.Capability;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -38,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> The type of the optional value.
  */
-@ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class LazyOptional<T>
 {
