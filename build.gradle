@@ -124,3 +124,16 @@ loom {
         }
     }
 }
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+
+    }
+}
