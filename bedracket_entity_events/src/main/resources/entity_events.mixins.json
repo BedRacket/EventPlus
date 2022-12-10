@@ -6,6 +6,7 @@
   "mixins": [
     "MixinArmorStandEntity",
     "MixinEntity",
+    "MixinFishingBobberEntity",
     "MixinItemEntity",
     "MixinLivingEntity",
     "MixinMobEntity",
