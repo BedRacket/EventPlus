@@ -32,7 +32,7 @@ public class BedRacket {
                 clazz = clazz.getSuperclass();
             }
 
-            if (clazz != null && clazz.equals(Event.class)) { // first argument of method is subclass of Event
+            if (clazz.equals(Event.class)) { // first argument of method is subclass of Event
                 EventHandler handler = method.getAnnotation(EventHandler.class);
                 List<RegisteredListener> list = eventHandlers.getOrDefault(clazzo, new ArrayList<>());
                 EventExecutor executor = new EventExecutor() {
@@ -83,6 +83,9 @@ public class BedRacket {
         for (RegisteredListener registeredListener : listeners) {
             Method method = registeredListener.getMethod();
             try {
+                if (event instanceof Blockable && ((Blockable) event).isBlocked()) {
+                    return;
+                }
                 if (event instanceof Cancellable) {
                     if (((Cancellable) event).isCancelled() && registeredListener.isIgnoringCancelled()) {
                         return;

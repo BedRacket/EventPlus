@@ -12,7 +12,7 @@ public class RegisteredListener {
     private final boolean ignoreCancelled;
     private final Method method;
 
-    public RegisteredListener(Listener listener, EventHandler handler, EventExecutor executor, Method method) {
+    public RegisteredListener(@NotNull Listener listener, @NotNull EventHandler handler, @NotNull EventExecutor executor, @NotNull Method method) {
         this.listener = listener;
         this.priority = handler.priority();
         this.executor = executor;
@@ -41,10 +41,12 @@ public class RegisteredListener {
         return priority;
     }
 
+    @NotNull
     public Method getMethod() {
         return method;
     }
 
+    @NotNull
     public EventExecutor getExecutor() {
         return executor;
     }
