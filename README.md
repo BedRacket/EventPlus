@@ -1,8 +1,8 @@
-# Introduction
-A Fabric mod that add many event hooks.
-Using custom event bus to better use than origin.
+# EventPlus
+* A Fabric mod that add many event hooks.
+* Using custom event bus to better use than origin.
 
-# Credit
+# Credits
 * [**MinecraftForge**](https://github.com/MinecraftForge/MinecraftForge.git) - some events.
 * [**Bukkit**](https://hub.spigotmc.org/stash/scm/spigot/bukkit.git) - some events.
 * [**ICommonLib**](https://github.com/CardboardPowered/iCommonLib) - event bus.
