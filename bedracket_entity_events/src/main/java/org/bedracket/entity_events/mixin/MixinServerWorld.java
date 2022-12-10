@@ -6,6 +6,7 @@ import net.minecraft.server.world.ServerWorld;
 import org.bedracket.entity_events.event.EntityJoinWorldEvent;
 import org.bedracket.entity_events.event.item.ItemSpawnEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventException;
 import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinServerWorld {
 
     @Inject(method = "addEntity", at = @At("HEAD"))
-    private void callEntityJoinWorldEvent(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+    private void callEntityJoinWorldEvent(Entity entity, CallbackInfoReturnable<Boolean> cir) throws EventException {
         EntityJoinWorldEvent bedracketEvent =
                 (EntityJoinWorldEvent) BedRacket.EVENT_BUS.post(
                 EntityJoinWorldEvent.class,
@@ -28,7 +29,7 @@ public abstract class MixinServerWorld {
     }
 
     @Inject(method = "spawnEntity", at = @At("HEAD"))
-    private void callItemEntitySpawnEvent(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+    private void callItemEntitySpawnEvent(Entity entity, CallbackInfoReturnable<Boolean> cir) throws EventException {
         if (entity instanceof ItemEntity) {
             BedRacket.EVENT_BUS.post(ItemSpawnEvent.class, new ItemSpawnEvent((ItemEntity) entity));
         }

@@ -11,6 +11,7 @@ import org.bedracket.entity_events.event.living.LivingJumpEvent;
 import org.bedracket.entity_events.event.living.LivingTickEvent;
 import org.bedracket.entity_events.event.living.LivingVisibilityEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventException;
 import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,17 +24,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinLivingEntity {
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private void callLivingTickEvent(CallbackInfo ci) {
+    private void callLivingTickEvent(CallbackInfo ci) throws EventException {
         BedRacket.EVENT_BUS.post(LivingTickEvent.class, new LivingTickEvent(((LivingEntity) (Object) this)));
     }
 
     @Inject(method = "jump", at = @At("TAIL"))
-    private void callLivingJumpEvent(CallbackInfo ci) {
+    private void callLivingJumpEvent(CallbackInfo ci) throws EventException {
         BedRacket.EVENT_BUS.post(LivingJumpEvent.class, new LivingJumpEvent(((LivingEntity) (Object) this)));
     }
 
     @Inject(method = "getAttackDistanceScalingFactor", at = @At("TAIL"))
-    private void callLivingVisibilityEvent(Entity entity, CallbackInfoReturnable<Double> cir) {
+    private void callLivingVisibilityEvent(Entity entity, CallbackInfoReturnable<Double> cir) throws EventException {
         double prefix$d = 1.0;
         if (((LivingEntity) (Object) this).isSneaky()) {
             prefix$d *= 0.8;
@@ -66,14 +67,14 @@ public abstract class MixinLivingEntity {
     }
 
     @Inject(method = "heal",at=@At("HEAD"),cancellable = true)
-    private void callLivingHealEvent(float amount, CallbackInfo ci) {
+    private void callLivingHealEvent(float amount, CallbackInfo ci) throws EventException {
         amount = onLivingHeal(((LivingEntity) (Object) this), amount);
         if (amount <= 0) {
             ci.cancel();
         }
     }
 
-    private static float onLivingHeal(LivingEntity entity, float amount) {
+    private static float onLivingHeal(LivingEntity entity, float amount) throws EventException {
         LivingHealEvent bedracketEvent =
                 (LivingHealEvent) BedRacket.EVENT_BUS
                         .post(LivingHealEvent.class,

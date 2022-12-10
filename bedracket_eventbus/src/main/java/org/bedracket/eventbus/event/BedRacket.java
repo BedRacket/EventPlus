@@ -1,5 +1,9 @@
 package org.bedracket.eventbus.event;
 
+import com.mojang.logging.LogUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,61 +13,84 @@ import java.util.List;
 public class BedRacket {
 
     public static HashMap<Class<?>, List<RegisteredListener>> eventHandlers = new HashMap<>();
+    public static Logger LOGGER = LogUtils.getLogger();
 
-    public static BedRacket EVENT_BUS = new BedRacket();
+    public static final BedRacket EVENT_BUS = new BedRacket();
 
-    public static boolean register(Class<?> c, Method e, Object lis) {
-        EventHandler hand = e.getAnnotation(EventHandler.class);
-
-        List<RegisteredListener> list = eventHandlers.getOrDefault(c, new ArrayList<>());
-        RegisteredListener l = new RegisteredListener(lis, hand, e);
-        eventHandlers.put(c, list);
-
-        return list.add(l);
-    }
-
-    public int registerAll(Object lis) {
+    public int addListener(Listener listener) {
         int registered = 0;
-        for (Method m : lis.getClass().getMethods()) {
+        for (Method method : listener.getClass().getMethods()) {
+            Class<?>[] put = method.getParameterTypes();
+            if (put.length == 0) continue;
 
-            Class<?>[] pt = m.getParameterTypes();
-            if (pt.length <= 0) continue;
+            Class<?> clazz = put[0];
+            Class<?> clazzo = put[0];
 
-            Class<?> clazz = pt[0];
-            Class<?> clazzo = pt[0];
-
-            while (null != clazz.getSuperclass()) {
+            while (clazz.getSuperclass() != null) {
                 if (clazz.equals(Event.class)) break;
 
                 clazz = clazz.getSuperclass();
             }
 
-            if (clazz.equals(Event.class)) { // first argument of method is subclass of Event
-                if (register(clazzo, m, lis)) registered++;
+            if (clazz != null && clazz.equals(Event.class)) { // first argument of method is subclass of Event
+                EventHandler handler = method.getAnnotation(EventHandler.class);
+                List<RegisteredListener> list = eventHandlers.getOrDefault(clazzo, new ArrayList<>());
+                EventExecutor executor = new EventExecutor() {
+                    @Override
+                    public void execute(@NotNull Listener listener, @NotNull Event event) throws EventException, InvocationTargetException, IllegalAccessException {
+                        try {
+                            if (!clazzo.isAssignableFrom(event.getClass())) {
+                                return;
+                            }
+                            method.invoke(listener, event);
+                        } catch (InvocationTargetException ex) {
+                            throw new EventException(ex.getCause());
+                        } catch (Throwable t) {
+                            throw new EventException(t);
+                        }
+                    }
+                };
+                RegisteredListener registeredListener = new RegisteredListener(listener, handler, executor, method);
+                list.add(registeredListener);
+                eventHandlers.put(clazzo, list);
+                registered++;
             }
         }
         return registered;
     }
 
-    public Event post(Class<? extends Event> type, Event ev) {
-        post(eventHandlers.getOrDefault(type, new ArrayList<>()), ev);
-        return ev;
+    public Event post(Class<? extends Event> type, Event event) throws EventException {
+        post(eventHandlers.getOrDefault(type, new ArrayList<>()), event);
+        return event;
     }
 
-    public void post(List<RegisteredListener> ls, Event ev) {
-        if (ev.isAsynchronous()) Multithreading.runAsync(() -> post0(ls,ev)); else post0(ls,ev);
+    public void post(List<RegisteredListener> listeners, Event event) throws EventException {
+        if (event.isAsynchronous()) {
+            Multithreading.runAsync(() -> {
+                try {
+                    post0(listeners, event);
+                } catch (EventException e) {
+                    e.printStackTrace();
+                    LOGGER.error( "Could not pass event " + event.getEventName() + " to Mod", e);
+                }
+            });
+        } else {
+            post0(listeners, event);
+        }
     }
 
-    public void post0(List<RegisteredListener> ls, Event ev) {
-        for (RegisteredListener listener : ls) {
-            Method m = listener.method;
+    public void post0(List<RegisteredListener> listeners, Event event) throws EventException {
+        for (RegisteredListener registeredListener : listeners) {
+            Method method = registeredListener.getMethod();
             try {
-                if (ev instanceof Blockable && ((Blockable) ev).isBlocked()) return;
-                if (ev instanceof Cancellable)
-                    if (((Cancellable)ev).isCancelled() && !listener.ignoreCancelled) return;
-
-                m.invoke(listener.getListener(), ev);
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                if (event instanceof Cancellable) {
+                    if (((Cancellable) event).isCancelled() && registeredListener.isIgnoringCancelled()) {
+                        return;
+                    }
+                }
+                method.invoke(registeredListener.getListener(), event);
+                registeredListener.getExecutor().execute(registeredListener.getListener(), event);
+            } catch (EventException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

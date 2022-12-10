@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import org.bedracket.entity_events.event.player.PlayerLevelUpEvent;
 import org.bedracket.entity_events.event.player.PlayerSleepEvent;
 import org.bedracket.eventbus.event.BedRacket;
+import org.bedracket.eventbus.event.EventException;
 import org.bedracket.eventbus.event.EventInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinPlayerEntity {
 
     @Inject(method = "trySleep",at=@At("HEAD"),cancellable = true)
-    private void callPlayerSleepEvent(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> cir) {
+    private void callPlayerSleepEvent(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> cir) throws EventException {
         PlayerSleepEvent bedracketEvent = (PlayerSleepEvent) BedRacket.EVENT_BUS.post(PlayerSleepEvent.class,
                 new PlayerSleepEvent(((PlayerEntity) (Object) this), pos,
                         ((PlayerEntity) (Object) this).getWorld().getTime()));
@@ -29,7 +30,7 @@ public abstract class MixinPlayerEntity {
     }
 
     @Inject(method = "addExperienceLevels",at=@At("HEAD"),cancellable = true)
-    private void callPlayerLevelUpEvent(int levels, CallbackInfo ci) {
+    private void callPlayerLevelUpEvent(int levels, CallbackInfo ci) throws EventException {
         PlayerLevelUpEvent bedracketEvent =
                 (PlayerLevelUpEvent) BedRacket.EVENT_BUS.post(PlayerLevelUpEvent.class, new PlayerLevelUpEvent(((PlayerEntity) (Object) this), ((PlayerEntity) (Object) this).getWorld()));
         if (bedracketEvent.isCancelled()) {
