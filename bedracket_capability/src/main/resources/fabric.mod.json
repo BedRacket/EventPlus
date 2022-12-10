@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "id": "capability",
+  "version": "${version}",
+  "icon": "assets/capability/icon.png",
+  "name": "BedRacket Capabilities",
+  "description": "This is a capability system mod!"
+}

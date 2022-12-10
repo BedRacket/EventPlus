@@ -1,9 +1,6 @@
 {
   "schemaVersion": 1,
   "id": "event_plus",
-  "provides": [
-    "fabric"
-  ],
   "name": "Event Plus API",
   "version": "${version}",
   "environment": "*",
