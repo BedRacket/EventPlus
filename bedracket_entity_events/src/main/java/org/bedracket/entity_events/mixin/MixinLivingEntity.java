@@ -6,7 +6,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import org.bedracket.entity_events.EntityEventHooks;
+import org.bedracket.entity_events.event.living.LivingHealEvent;
 import org.bedracket.entity_events.event.living.LivingJumpEvent;
 import org.bedracket.entity_events.event.living.LivingTickEvent;
 import org.bedracket.entity_events.event.living.LivingVisibilityEvent;
@@ -68,7 +68,12 @@ public abstract class MixinLivingEntity {
 
     @Inject(method = "heal",at=@At("HEAD"),cancellable = true)
     private void callLivingHealEvent(float amount, CallbackInfo ci) throws EventException {
-        amount = EntityEventHooks.onLivingHeal(((LivingEntity) (Object) this), amount);
+        LivingHealEvent bedracketEvent =
+                (LivingHealEvent) BedRacket.EVENT_BUS
+                        .post(LivingHealEvent.class,
+                                new LivingHealEvent(((LivingEntity) (Object) this), amount));
+
+        amount = bedracketEvent.getAmount();
         if (amount <= 0) {
             ci.cancel();
         }
