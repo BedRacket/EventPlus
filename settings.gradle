@@ -12,4 +12,3 @@ rootProject.name = "eventplus"
 
 include("bedracket_eventbus")
 include("bedracket_entity_events")
-include("bedracket_capability")

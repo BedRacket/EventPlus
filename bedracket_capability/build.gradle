@@ -1,2 +1,0 @@
-archivesBaseName = "bedracket_capability"
-version = getSubprojectVersion(project)

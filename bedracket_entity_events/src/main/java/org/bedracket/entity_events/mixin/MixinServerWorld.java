@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import org.bedracket.entity_events.event.EntityJoinWorldEvent;
+import org.bedracket.entity_events.EntityEventHooks;
 import org.bedracket.entity_events.event.item.ItemSpawnEvent;
 import org.bedracket.eventbus.event.BedRacket;
 import org.bedracket.eventbus.event.EventException;
@@ -20,24 +20,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinServerWorld {
 
     @Inject(method = "addEntity", at = @At("HEAD"), cancellable = true)
-    private void callEntityJoinWorldEvent(Entity entity, CallbackInfoReturnable<Boolean> cir) throws EventException {
-        EntityJoinWorldEvent bedracketEvent =
-                (EntityJoinWorldEvent) BedRacket.EVENT_BUS.post(
-                EntityJoinWorldEvent.class,
-                new EntityJoinWorldEvent(entity, entity.getWorld()));
-        if (bedracketEvent.isCancelled()) {
-           cir.cancel();
+    private void onAddEntity(Entity entity, CallbackInfoReturnable<Boolean> cir) throws EventException {
+        if (EntityEventHooks.onEntityJoinWorld(entity, entity.getWorld())) {
+            cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "addPlayer", at = @At("HEAD"), cancellable = true)
-    private void callEntityJoinWorldEventOnPlayerJoin(ServerPlayerEntity player, CallbackInfo ci) throws EventException {
-        EntityJoinWorldEvent bedracketEvent =
-                (EntityJoinWorldEvent) BedRacket.EVENT_BUS.post(
-                        EntityJoinWorldEvent.class,
-                        new EntityJoinWorldEvent(player, player.getWorld()));
-        if (bedracketEvent.isCancelled()) {
+    private void onAddPlayer(ServerPlayerEntity player, CallbackInfo ci) throws EventException {
+        if (EntityEventHooks.onEntityJoinWorld(player, player.getWorld())) {
             ci.cancel();
+        }
+    }
+
+    @Inject(method = "tryLoadEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;addEntity(Lnet/minecraft/entity/Entity;)Z"), cancellable = true)
+    private void onLoadEntity(Entity entity, CallbackInfoReturnable<Boolean> cir) throws EventException {
+        if (EntityEventHooks.onEntityJoinWorld(entity, entity.getWorld())) {
+            cir.setReturnValue(false);
         }
     }
 
